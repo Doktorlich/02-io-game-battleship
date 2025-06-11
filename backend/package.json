@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "dist/app.js",
   "scripts": {
-    "dev": "nodemon --watch src -e ts --exec ts-node src/app.ts"
+    "dev": "nodemon --watch src -e ts --exec ts-node src/server.ts"
   },
   "repository": {
     "type": "git",
@@ -11,7 +11,6 @@
   },
   "keywords": [
     "api",
-    "blog",
     "nodejs",
     "express",
     "mongodb",
@@ -22,22 +21,24 @@
   "author": "Sergey Manukhin",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Doktorlich/01-api-for-the-blog/issues"
+    "url": "https://github.com/Doktorlich/02-io-game-battleship.git"
   },
-  "homepage": "https://github.com/Doktorlich/01-api-for-the-blog#readme",
+  "homepage": "https://github.com/Doktorlich/02-io-game-battleship.git#readme",
   "description": "",
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "connect-mongodb-session": "^5.0.0",
     "cookie-parser": "^1.4.7",
-    "date-fns": "^4.1.0",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "express-session": "^1.18.1",
     "express-validator": "^7.2.1",
+    "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.15.0",
-    "pug": "^3.0.3"
+    "morgan": "^1.10.0",
+    "socket.io": "^4.8.1",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@types/connect-mongodb-session": "^2.4.8",
@@ -45,6 +46,7 @@
     "@types/express": "^5.0.2",
     "@types/express-session": "^1.18.1",
     "@types/jsonwebtoken": "^9.0.9",
+    "@types/morgan": "^1.9.10",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2"
   }

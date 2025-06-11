@@ -37,7 +37,7 @@
 │   │   │── user.routes.ts      # GET /users/leaderboard  
 │   │  
 │   │── /sockets               # Логика WebSocket  
-│   │   │── game.socket.ts      # Обработчики game:attack, game:turn  
+│   │   │── game.index.ts      # Обработчики game:attack, game:turn  
 │   │   │── connection.ts       # Подключение/отключение игроков  
 │   │  
 │   │── /middlewares           # Промежуточные обработчики  
@@ -112,7 +112,7 @@
 │   │   │   │── ships.ts       # Расстановка кораблей  
 │   │   │  
 │   │   │── /sockets           # WebSocket  
-│   │   │   │── game.socket.ts # Подписка на события  
+│   │   │   │── game.index.ts # Подписка на события  
 │   │   │  
 │   │   │── /utils             # Вспомогательные функции  
 │   │   │   │── helpers.ts     # Генерация случайных чисел  
