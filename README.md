@@ -34,7 +34,7 @@
 │   │── /routes                # Роуты Express  
 │   │   │── auth.routes.ts      # POST /auth/login  
 │   │   │── game.routes.ts      # GET /games/available  
-│   │   │── user.routes.ts      # GET /users/leaderboard  
+│   │   │── users.routes.ts      # GET /users/leaderboard  
 │   │  
 │   │── /sockets               # Логика WebSocket  
 │   │   │── game.index.ts      # Обработчики game:attack, game:turn  

@@ -12,7 +12,7 @@ connectDB()
         const io = socketIo.init(server);
 
         io.on("connection", socket => {
-            console.log("Client connected");
+            console.log("Client connected ws");
         });
 
         handleGracefulShutdown(server);

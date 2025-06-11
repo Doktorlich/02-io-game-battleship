@@ -10,6 +10,7 @@ import {
 } from "./config/error-handlers";
 import { globalPathPublic } from "./config/static";
 import { cookiePars } from "./config/cookie";
+import indexRouter from "./routes/index.routes";
 
 const app = express();
 // экспресс боди парсер
@@ -30,10 +31,10 @@ app.use(cookiePars);
 //шлобальный путь к публичным файлам
 app.use(globalPathPublic);
 
-// app.use(routerIndex);
-app.use((req, res, next) => {
-    res.send("Some text");
-});
+app.use(indexRouter);
+// app.use((req, res, next) => {
+//     res.send("Some text");
+// });
 // перехватчик ошибок
 
 app.use(notFoundHandler);
