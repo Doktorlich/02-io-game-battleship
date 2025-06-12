@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { CustomError } from "../types/errors.type";
+import { CustomError } from "../@types/custom";
 import app from "../app";
 export const registerProcessEvents = () => {
     process.on("unhandledRejection", err => {
