@@ -10,7 +10,9 @@ import {
 } from "./config/error-handlers";
 import { globalPathPublic } from "./config/static";
 import { cookiePars } from "./config/cookie";
+import session from "express-session";
 import indexRouter from "./routes/index.routes";
+import sessionMiddleware from "./config/session";
 
 const app = express();
 // экспресс боди парсер
@@ -26,16 +28,13 @@ app.use(securityHelmet);
 app.use(corsMiddleware);
 //process.on handlers
 registerProcessEvents();
+// app.use(sessionMiddleware);
 // извелчение файлов из куки
 app.use(cookiePars);
 //шлобальный путь к публичным файлам
 app.use(globalPathPublic);
 
 app.use(indexRouter);
-// app.use((req, res, next) => {
-//     res.send("Some text");
-// });
-// перехватчик ошибок
 
 app.use(notFoundHandler);
 app.use(globalErrorHandler);

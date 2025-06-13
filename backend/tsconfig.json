@@ -104,7 +104,7 @@
     // "noUnusedParameters": true,                       /* Ошибка при неиспользуемых параметрах. */
     // "exactOptionalPropertyTypes": true,               /* Точно интерпретировать optional-свойства. */
     // "noImplicitReturns": true,                        /* Ошибка, если путь функции не возвращает значение. */
-    // "noFallthroughCasesInSwitch": true,               /* Ошибка при fallthrough в switch. */
+    // "noFallthroughCasesInSwitch": true, /* Ошибка при fallthrough в switch. */
     // "noUncheckedIndexedAccess": true,                 /* Добавить 'undefined' при доступе по индексу. */
     // "noImplicitOverride": true,                       /* Требовать 'override' при переопределении. */
     // "noPropertyAccessFromIndexSignature": true,       /* Запретить доступ к свойствам через индекс, если они не объявлены. */

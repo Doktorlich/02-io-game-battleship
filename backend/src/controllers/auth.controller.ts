@@ -84,34 +84,70 @@ async function postLogin(req: Request, res: Response, next: NextFunction) {
             process.env.SECRET_REFRESH_JWT!,
             { expiresIn: "30d" },
         );
-        req.session.user = user;
-        req.session.accessToken = accessToken;
-        req.session.refreshToken = refreshToken;
-        req.session.save((error: any) => {
-            if (error) {
-                const error = new Error("Session saving error.") as CustomError;
-                error.statusCode = 401;
-                throw error;
-            }
-            res.cookie("accessToken", accessToken, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV! === "production",
-                sameSite: "lax",
-                maxAge: 1000 * 60 * 30,
-            });
-            res.cookie("refreshToken", refreshToken, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV! === "production",
-                sameSite: "lax",
-                maxAge: 1000 * 60 * 60 * 24 * 30,
-            });
+        // console.log("req.session.accessToken", req.session.accessToken);
+        // console.log("accessToken", accessToken);
+        // req.session.isLoggedIn = true;
+        // req.session.user = user;
+        // req.session.accessToken = accessToken;
+        // req.session.refreshToken = refreshToken;
+        // req.session.save((error: any) => {
+        //     if (error) {
+        //         const error = new Error("Session saving error.") as CustomError;
+        //         error.statusCode = 401;
+        //         throw error;
+        //     }
+        res.cookie("accessToken", accessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV! === "production",
+            sameSite: "lax",
+            maxAge: 1000 * 60 * 30,
         });
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV! === "production",
+            sameSite: "lax",
+            maxAge: 1000 * 60 * 60 * 24 * 30,
+        });
+        res.cookie("user", {
+            userId: loadedUser._id.toString(),
+            email: loadedUser.email,
+        });
+        // });
 
         res.status(200).json({
             accessToken: accessToken,
             refreshToken: refreshToken,
             userId: loadedUser._id.toString(),
         });
+    } catch (error: any) {
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+        next(error);
+    }
+}
+async function postLogout(req: Request, res: Response, next: NextFunction) {
+    try {
+        res.clearCookie("connect.sid", {
+            // Это стандартное имя куки для express-session
+            path: "/",
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+        });
+        res.clearCookie("accessToken", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV! === "production",
+            sameSite: "lax",
+            maxAge: 1000 * 60 * 30,
+        });
+        res.clearCookie("refreshToken", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV! === "production",
+            sameSite: "lax",
+            maxAge: 1000 * 60 * 60 * 24 * 30,
+        });
+        res.status(200).json({ message: "Logged out successfully" });
     } catch (error: any) {
         if (!error.statusCode) {
             error.statusCode = 500;
@@ -126,7 +162,7 @@ export const authControllers = {
     postRegister,
     // postRegister,
     // postRefresh,
-    // postLogout,
+    postLogout,
     // getMe,
     // postMe,
 };

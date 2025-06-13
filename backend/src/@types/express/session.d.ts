@@ -6,7 +6,6 @@ declare module "express-session" {
         isLoggedIn?: boolean;
         user?: UserDocument;
         accessToken?: string;
-
         refreshToken?: string;
     }
 }
