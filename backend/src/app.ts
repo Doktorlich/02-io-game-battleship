@@ -28,6 +28,7 @@ app.use(securityHelmet);
 app.use(corsMiddleware);
 //process.on handlers
 registerProcessEvents();
+// middleware для работы с сессиями
 // app.use(sessionMiddleware);
 // извелчение файлов из куки
 app.use(cookiePars);

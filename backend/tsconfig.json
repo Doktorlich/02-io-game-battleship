@@ -116,5 +116,5 @@
     "skipLibCheck": true                                 /* Пропустить проверку всех .d.js файлов. */
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts"],                             /* Включает файлы для компиляции */
-  "files": ["src/@types/express/session.d.ts",]
+  "files": ["src/@types/express/session.d.ts","src/@types/express/request.d.ts"]
 }

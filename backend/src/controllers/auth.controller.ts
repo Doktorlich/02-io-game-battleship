@@ -16,7 +16,9 @@ import jwt from "jsonwebtoken";
 import { NextFunction, Request, Response } from "express";
 import { validationResult } from "express-validator";
 import { CustomError } from "../@types/custom";
+import { validateEnv } from "../config/env";
 
+validateEnv();
 async function postRegister(req: Request, res: Response, next: NextFunction) {
     const body = req.body;
     const email = body.email;
@@ -43,7 +45,9 @@ async function postRegister(req: Request, res: Response, next: NextFunction) {
     } catch (error: any) {
         if (!error.statusCode) {
             error.statusCode = 500;
+            console.log("postRegister error:", error);
         }
+        console.log("postRegister error:", error);
         next(error);
     }
 }
@@ -122,7 +126,9 @@ async function postLogin(req: Request, res: Response, next: NextFunction) {
     } catch (error: any) {
         if (!error.statusCode) {
             error.statusCode = 500;
+            console.log("postLogin error:", error);
         }
+        console.log("postLogin error:", error);
         next(error);
     }
 }
@@ -145,23 +151,63 @@ async function postLogout(req: Request, res: Response, next: NextFunction) {
             httpOnly: true,
             secure: process.env.NODE_ENV! === "production",
             sameSite: "lax",
-            maxAge: 1000 * 60 * 60 * 24 * 30,
+            maxAge: 1000 * 60 * 60 * 24 * 7,
         });
         res.status(200).json({ message: "Logged out successfully" });
     } catch (error: any) {
         if (!error.statusCode) {
             error.statusCode = 500;
+            console.log("postLogout error:", error);
         }
+        console.log("postLogout error:", error);
         next(error);
     }
 }
+async function postRefresh(req: Request, res: Response, next: NextFunction) {
+    try {
+        const refreshToken = req.cookies.refreshToken;
+        if (!refreshToken) {
+            const error = new Error("Refresh token is not valid.") as CustomError;
+            error.statusCode = 401;
+            throw error;
+        }
+        const decodedRefreshToken = jwt.verify(refreshToken, process.env.SECRET_REFRESH_JWT!).split(".");
+        const user = await User.findOne({ email: decodedRefreshToken[1].email });
+        if (!user) {
+            const error = new Error("User not found.") as CustomError;
+            error.statusCode = 401;
+            throw error;
+        }
+        const newAccessToken = jwt.sign({ userId: user._id.toString(), email: user.email }, process.env.SECRET_ACCESS_JWT!, { expiresIn: "30m" });
+        const newRefreshToken = jwt.sign({ userId: user._id.toString(), email: user.email }, process.env.SECRET_REFRESH_JWT!, { expiresIn: "7d" });
 
+        res.cookie("accessToken", newAccessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV! === "production",
+            sameSite: "lax",
+            maxAge: 1000 * 60 * 30,
+        });
+        res.cookie("refreshToken", newRefreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV! === "production",
+            sameSite: "lax",
+            maxAge: 1000 * 60 * 60 * 24 * 7,
+        });
+        res.status(200).json({ accessToken: newAccessToken, refreshToken: newRefreshToken, userId: user._id.toString() });
+    } catch (error: any) {
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+        console.log("postRefresh error:", error);
+        next(error);
+    }
+}
 export const authControllers = {
     // getLogin,
     postLogin,
     postRegister,
     // postRegister,
-    // postRefresh,
+    postRefresh,
     postLogout,
     // getMe,
     // postMe,

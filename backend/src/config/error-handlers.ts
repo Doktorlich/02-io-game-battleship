@@ -17,12 +17,7 @@ export const notFoundHandler = (req: Request, res: Response, next: NextFunction)
         path: req.originalUrl,
     });
 };
-export const globalErrorHandler = (
-    err: CustomError,
-    req: Request,
-    res: Response,
-    next: NextFunction,
-) => {
+export const globalErrorHandler = (err: CustomError, req: Request, res: Response, next: NextFunction) => {
     console.log(err);
     const status = err.statusCode || 500;
     const message = err.message;
