@@ -136,8 +136,11 @@ async function postRefresh(req: Request, res: Response, next: NextFunction) {
             error.statusCode = 401;
             throw error;
         }
-        const decodedRefreshToken = jwt.verify(refreshToken, process.env.SECRET_REFRESH_JWT!).split(".");
-        const user = await User.findOne({ email: decodedRefreshToken[1].email });
+        const decodedRefreshToken = jwt.verify(refreshToken, process.env.SECRET_REFRESH_JWT!) as {
+            userId: string;
+            email: string;
+        };
+        const user = await User.findOne({ email: decodedRefreshToken.email });
         if (!user) {
             const error = new Error("User not found.") as CustomError;
             error.statusCode = 401;

@@ -12,8 +12,8 @@ interface Board {
     shots: Array<{ x: number; y: number }>; // координаты выстрелов
 }
 const game = new Schema({
-    player1: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    player2: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    player1: { type: Schema.Types.ObjectId, ref: "User", required: true, unique: true },
+    player2: { type: Schema.Types.ObjectId, ref: "User", unique: true },
 
     currentTurn: { type: Boolean, required: true, default: true },
     board1: {
