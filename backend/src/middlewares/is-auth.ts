@@ -12,11 +12,7 @@ export async function isAuth(req: Request, res: Response, next: NextFunction) {
         }
         const token = authHeader.split(" ")[1];
         let decodedAccessToken = jwt.verify(token, process.env.SECRET_ACCESS_JWT!) as { userId: string };
-        if (!decodedAccessToken) {
-            const error = new Error("Not authenticated") as CustomError;
-            error.statusCode = 401;
-            throw error;
-        }
+
         req.userId = decodedAccessToken.userId;
         next();
     } catch (error: any) {

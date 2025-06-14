@@ -17,6 +17,7 @@ import { NextFunction, Request, Response } from "express";
 import { validationResult } from "express-validator";
 import { CustomError } from "../@types/custom";
 import { validateEnv } from "../config/env";
+import { validateUser, generateTokens } from "../services/auth.service";
 
 validateEnv();
 async function postRegister(req: Request, res: Response, next: NextFunction) {
@@ -55,51 +56,11 @@ async function postLogin(req: Request, res: Response, next: NextFunction) {
     const body = req.body;
     const email = body.email;
     const password = body.password;
-    let loadedUser;
     try {
-        const user = await User.findOne({ email: email });
-        if (!user) {
-            const error = new Error("A user with this email could not be found.") as CustomError;
-            error.statusCode = 401;
-            throw error;
-        }
-        loadedUser = user;
+        const user = await validateUser(email, password);
 
-        const isEqual = await bcrypt.compare(password, user.password);
-        if (!isEqual) {
-            const error = new Error("Wrong password.") as CustomError;
-            error.statusCode = 401;
-            throw error;
-        }
+        const { accessToken, refreshToken } = generateTokens(user);
 
-        const accessToken = jwt.sign(
-            {
-                userId: loadedUser._id.toString(),
-                email: loadedUser.email,
-            },
-            process.env.SECRET_ACCESS_JWT!,
-            { expiresIn: "30m" },
-        );
-        const refreshToken = jwt.sign(
-            {
-                userId: loadedUser._id.toString(),
-                email: loadedUser.email,
-            },
-            process.env.SECRET_REFRESH_JWT!,
-            { expiresIn: "30d" },
-        );
-        // console.log("req.session.accessToken", req.session.accessToken);
-        // console.log("accessToken", accessToken);
-        // req.session.isLoggedIn = true;
-        // req.session.user = user;
-        // req.session.accessToken = accessToken;
-        // req.session.refreshToken = refreshToken;
-        // req.session.save((error: any) => {
-        //     if (error) {
-        //         const error = new Error("Session saving error.") as CustomError;
-        //         error.statusCode = 401;
-        //         throw error;
-        //     }
         res.cookie("accessToken", accessToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV! === "production",
@@ -110,18 +71,21 @@ async function postLogin(req: Request, res: Response, next: NextFunction) {
             httpOnly: true,
             secure: process.env.NODE_ENV! === "production",
             sameSite: "lax",
-            maxAge: 1000 * 60 * 60 * 24 * 30,
+            maxAge: 1000 * 60 * 60 * 24 * 7,
         });
-        res.cookie("user", {
-            userId: loadedUser._id.toString(),
-            email: loadedUser.email,
-        });
-        // });
+        res.cookie(
+            "user",
+            {
+                userId: user._id.toString(),
+                email: user.email,
+            },
+            { httpOnly: true, secure: process.env.NODE_ENV! === "production", sameSite: "lax" },
+        );
 
         res.status(200).json({
             accessToken: accessToken,
             refreshToken: refreshToken,
-            userId: loadedUser._id.toString(),
+            userId: user._id.toString(),
         });
     } catch (error: any) {
         if (!error.statusCode) {
@@ -153,6 +117,7 @@ async function postLogout(req: Request, res: Response, next: NextFunction) {
             sameSite: "lax",
             maxAge: 1000 * 60 * 60 * 24 * 7,
         });
+        res.clearCookie("user", { httpOnly: true, secure: process.env.NODE_ENV! === "production", sameSite: "lax" });
         res.status(200).json({ message: "Logged out successfully" });
     } catch (error: any) {
         if (!error.statusCode) {
